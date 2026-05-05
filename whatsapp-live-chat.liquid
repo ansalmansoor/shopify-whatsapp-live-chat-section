@@ -1,11 +1,14 @@
 {% comment %}
-  Advanced WhatsApp Live Chat Button - Single File Shopify Section
-  Speed Optimized:
-  - No external CSS
+  Advanced WhatsApp Live Chat Button - Final Global Version
+  - Single Shopify section file
+  - Use with {% section 'whatsapp-live-chat' %} in layout/theme.liquid
+  - One button everywhere
+  - Customizable from global/static section in theme customizer
   - No external JS
-  - No image request
-  - Inline SVG WhatsApp icon
-  - Separate desktop/mobile controls
+  - No external CSS
+  - No external image
+  - Inline SVG icon
+  - PageSpeed friendly
 {% endcomment %}
 
 {%- liquid
@@ -54,7 +57,11 @@
     border: {{ s.border_width }}px solid var(--wa-border);
     border-radius: {{ s.border_radius_desktop }}px;
     box-shadow: 0 {{ s.shadow_y }}px {{ s.shadow_blur }}px var(--wa-shadow);
-    transition: transform 180ms ease, background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+    transition:
+      transform 180ms ease,
+      background-color 180ms ease,
+      color 180ms ease,
+      border-color 180ms ease;
     -webkit-tap-highlight-color: transparent;
   }
 
@@ -136,6 +143,7 @@
           opacity: 0.7;
           transform: scale(0.96);
         }
+
         100% {
           opacity: 0;
           transform: scale(1.16);
@@ -327,12 +335,24 @@
       "type": "select",
       "id": "position_desktop",
       "label": "Desktop position",
-      "default": "bottom_left",
+      "default": "bottom_right",
       "options": [
-        { "value": "bottom_left", "label": "Bottom left" },
-        { "value": "bottom_right", "label": "Bottom right" },
-        { "value": "top_left", "label": "Top left" },
-        { "value": "top_right", "label": "Top right" }
+        {
+          "value": "bottom_left",
+          "label": "Bottom left"
+        },
+        {
+          "value": "bottom_right",
+          "label": "Bottom right"
+        },
+        {
+          "value": "top_left",
+          "label": "Top left"
+        },
+        {
+          "value": "top_right",
+          "label": "Top right"
+        }
       ]
     },
     {
@@ -363,12 +383,24 @@
       "type": "select",
       "id": "position_mobile",
       "label": "Mobile position",
-      "default": "bottom_left",
+      "default": "bottom_right",
       "options": [
-        { "value": "bottom_left", "label": "Bottom left" },
-        { "value": "bottom_right", "label": "Bottom right" },
-        { "value": "top_left", "label": "Top left" },
-        { "value": "top_right", "label": "Top right" }
+        {
+          "value": "bottom_left",
+          "label": "Bottom left"
+        },
+        {
+          "value": "bottom_right",
+          "label": "Bottom right"
+        },
+        {
+          "value": "top_left",
+          "label": "Top left"
+        },
+        {
+          "value": "top_right",
+          "label": "Top right"
+        }
       ]
     },
     {
@@ -523,15 +555,60 @@
       "type": "header",
       "content": "Colors"
     },
-    { "type": "color", "id": "background_color", "label": "Button background", "default": "#FFFFFF" },
-    { "type": "color", "id": "text_color", "label": "Button text", "default": "#111111" },
-    { "type": "color", "id": "border_color", "label": "Button border", "default": "#25D366" },
-    { "type": "color", "id": "icon_background_color", "label": "Icon background", "default": "#25D366" },
-    { "type": "color", "id": "icon_color", "label": "Icon color", "default": "#FFFFFF" },
-    { "type": "color", "id": "hover_background_color", "label": "Hover background", "default": "#25D366" },
-    { "type": "color", "id": "hover_text_color", "label": "Hover text", "default": "#FFFFFF" },
-    { "type": "color", "id": "hover_border_color", "label": "Hover border", "default": "#25D366" },
-    { "type": "color", "id": "focus_color", "label": "Keyboard focus color", "default": "#25D366" },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Button background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Button text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Button border",
+      "default": "#25D366"
+    },
+    {
+      "type": "color",
+      "id": "icon_background_color",
+      "label": "Icon background",
+      "default": "#25D366"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "hover_background_color",
+      "label": "Hover background",
+      "default": "#25D366"
+    },
+    {
+      "type": "color",
+      "id": "hover_text_color",
+      "label": "Hover text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "hover_border_color",
+      "label": "Hover border",
+      "default": "#25D366"
+    },
+    {
+      "type": "color",
+      "id": "focus_color",
+      "label": "Keyboard focus color",
+      "default": "#25D366"
+    },
     {
       "type": "header",
       "content": "Border and shadow"
@@ -546,7 +623,12 @@
       "unit": "px",
       "default": 2
     },
-    { "type": "color", "id": "shadow_color", "label": "Shadow color", "default": "#000000" },
+    {
+      "type": "color",
+      "id": "shadow_color",
+      "label": "Shadow color",
+      "default": "#000000"
+    },
     {
       "type": "range",
       "id": "shadow_y",
@@ -571,7 +653,12 @@
       "type": "header",
       "content": "Animation"
     },
-    { "type": "checkbox", "id": "pulse_animation", "label": "Enable pulse animation", "default": false },
+    {
+      "type": "checkbox",
+      "id": "pulse_animation",
+      "label": "Enable pulse animation",
+      "default": false
+    },
     {
       "type": "range",
       "id": "pulse_size",
@@ -602,10 +689,22 @@
       "label": "Font weight",
       "default": "700",
       "options": [
-        { "value": "400", "label": "Regular" },
-        { "value": "500", "label": "Medium" },
-        { "value": "600", "label": "Semi bold" },
-        { "value": "700", "label": "Bold" }
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
       ]
     },
     {
@@ -614,10 +713,22 @@
       "label": "Z-index",
       "default": "9999",
       "options": [
-        { "value": "99", "label": "Low" },
-        { "value": "999", "label": "Medium" },
-        { "value": "9999", "label": "High" },
-        { "value": "99999", "label": "Very high" }
+        {
+          "value": "99",
+          "label": "Low"
+        },
+        {
+          "value": "999",
+          "label": "Medium"
+        },
+        {
+          "value": "9999",
+          "label": "High"
+        },
+        {
+          "value": "99999",
+          "label": "Very high"
+        }
       ]
     }
   ],
