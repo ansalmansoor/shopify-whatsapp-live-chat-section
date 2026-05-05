@@ -1,1 +1,3 @@
-# shopify-whatsapp-live-chat-section
+.DS_Store
+node_modules/
+.env

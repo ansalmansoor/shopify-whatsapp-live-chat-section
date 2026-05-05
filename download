@@ -1,0 +1,630 @@
+{% comment %}
+  Advanced WhatsApp Live Chat Button - Single File Shopify Section
+  Speed Optimized:
+  - No external CSS
+  - No external JS
+  - No image request
+  - Inline SVG WhatsApp icon
+  - Separate desktop/mobile controls
+{% endcomment %}
+
+{%- liquid
+  assign s = section.settings
+
+  assign page_link = canonical_url
+  assign default_message = s.message | default: 'Hello! I am interested in your product from this page:'
+  assign whatsapp_text = default_message | append: ' ' | append: page_link
+  assign encoded_text = whatsapp_text | url_encode
+
+  assign phone_clean = s.phone_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')'
+
+  assign whatsapp_url = 'https://wa.me/' | append: phone_clean | append: '?text=' | append: encoded_text
+-%}
+
+{%- if s.enable_button and phone_clean != blank -%}
+
+<style>
+  #shopify-section-{{ section.id }} {
+    --wa-bg: {{ s.background_color }};
+    --wa-text: {{ s.text_color }};
+    --wa-border: {{ s.border_color }};
+    --wa-icon-bg: {{ s.icon_background_color }};
+    --wa-icon-color: {{ s.icon_color }};
+    --wa-hover-bg: {{ s.hover_background_color }};
+    --wa-hover-text: {{ s.hover_text_color }};
+    --wa-hover-border: {{ s.hover_border_color }};
+    --wa-focus: {{ s.focus_color }};
+    --wa-shadow: {{ s.shadow_color | color_modify: 'alpha', 0.14 }};
+  }
+
+  #shopify-section-{{ section.id }} .wa-live-chat {
+    position: fixed;
+    z-index: {{ s.z_index }};
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: {{ s.gap_desktop }}px;
+    padding: {{ s.padding_y_desktop }}px {{ s.padding_x_desktop }}px;
+    font-size: {{ s.font_size_desktop }}px;
+    font-weight: {{ s.font_weight }};
+    line-height: 1;
+    text-decoration: none;
+    color: var(--wa-text);
+    background: var(--wa-bg);
+    border: {{ s.border_width }}px solid var(--wa-border);
+    border-radius: {{ s.border_radius_desktop }}px;
+    box-shadow: 0 {{ s.shadow_y }}px {{ s.shadow_blur }}px var(--wa-shadow);
+    transition: transform 180ms ease, background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #shopify-section-{{ section.id }} .wa-live-chat:hover {
+    transform: translateY(-{{ s.hover_lift }}px);
+    background: var(--wa-hover-bg);
+    color: var(--wa-hover-text);
+    border-color: var(--wa-hover-border);
+  }
+
+  #shopify-section-{{ section.id }} .wa-live-chat:focus-visible {
+    outline: 2px solid var(--wa-focus);
+    outline-offset: 3px;
+  }
+
+  #shopify-section-{{ section.id }} .wa-live-chat__icon {
+    width: {{ s.icon_size_desktop }}px;
+    height: {{ s.icon_size_desktop }}px;
+    min-width: {{ s.icon_size_desktop }}px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--wa-icon-bg);
+    color: var(--wa-icon-color);
+  }
+
+  #shopify-section-{{ section.id }} .wa-live-chat__icon svg {
+    width: 70%;
+    height: 70%;
+    display: block;
+    fill: currentColor;
+  }
+
+  #shopify-section-{{ section.id }} .wa-live-chat__text {
+    white-space: nowrap;
+  }
+
+  #shopify-section-{{ section.id }} .wa-live-chat__text-mobile {
+    display: none;
+  }
+
+  {% if s.position_desktop == 'bottom_left' %}
+    #shopify-section-{{ section.id }} .wa-live-chat {
+      left: {{ s.offset_x_desktop }}px;
+      bottom: {{ s.offset_y_desktop }}px;
+    }
+  {% elsif s.position_desktop == 'bottom_right' %}
+    #shopify-section-{{ section.id }} .wa-live-chat {
+      right: {{ s.offset_x_desktop }}px;
+      bottom: {{ s.offset_y_desktop }}px;
+    }
+  {% elsif s.position_desktop == 'top_left' %}
+    #shopify-section-{{ section.id }} .wa-live-chat {
+      left: {{ s.offset_x_desktop }}px;
+      top: {{ s.offset_y_desktop }}px;
+    }
+  {% elsif s.position_desktop == 'top_right' %}
+    #shopify-section-{{ section.id }} .wa-live-chat {
+      right: {{ s.offset_x_desktop }}px;
+      top: {{ s.offset_y_desktop }}px;
+    }
+  {% endif %}
+
+  {% if s.pulse_animation %}
+    @media (prefers-reduced-motion: no-preference) {
+      #shopify-section-{{ section.id }} .wa-live-chat::after {
+        content: "";
+        position: absolute;
+        inset: -{{ s.pulse_size }}px;
+        border: 1px solid {{ s.border_color | color_modify: 'alpha', 0.35 }};
+        border-radius: inherit;
+        animation: waPulse-{{ section.id }} 1.8s ease-out infinite;
+        pointer-events: none;
+      }
+
+      @keyframes waPulse-{{ section.id }} {
+        0% {
+          opacity: 0.7;
+          transform: scale(0.96);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(1.16);
+        }
+      }
+    }
+  {% endif %}
+
+  @media screen and (min-width: 750px) {
+    {% unless s.show_desktop %}
+      #shopify-section-{{ section.id }} .wa-live-chat {
+        display: none;
+      }
+    {% endunless %}
+  }
+
+  @media screen and (max-width: 749px) {
+    {% unless s.show_mobile %}
+      #shopify-section-{{ section.id }} .wa-live-chat {
+        display: none;
+      }
+    {% endunless %}
+
+    #shopify-section-{{ section.id }} .wa-live-chat {
+      gap: {{ s.gap_mobile }}px;
+      padding: {{ s.padding_y_mobile }}px {{ s.padding_x_mobile }}px;
+      font-size: {{ s.font_size_mobile }}px;
+      border-radius: {{ s.border_radius_mobile }}px;
+    }
+
+    #shopify-section-{{ section.id }} .wa-live-chat__icon {
+      width: {{ s.icon_size_mobile }}px;
+      height: {{ s.icon_size_mobile }}px;
+      min-width: {{ s.icon_size_mobile }}px;
+    }
+
+    #shopify-section-{{ section.id }} .wa-live-chat__text-desktop {
+      display: none;
+    }
+
+    #shopify-section-{{ section.id }} .wa-live-chat__text-mobile {
+      display: inline;
+    }
+
+    {% if s.hide_text_mobile %}
+      #shopify-section-{{ section.id }} .wa-live-chat__text {
+        display: none;
+      }
+    {% endif %}
+
+    {% if s.position_mobile == 'bottom_left' %}
+      #shopify-section-{{ section.id }} .wa-live-chat {
+        left: {{ s.offset_x_mobile }}px;
+        right: auto;
+        top: auto;
+        bottom: {{ s.offset_y_mobile }}px;
+      }
+    {% elsif s.position_mobile == 'bottom_right' %}
+      #shopify-section-{{ section.id }} .wa-live-chat {
+        right: {{ s.offset_x_mobile }}px;
+        left: auto;
+        top: auto;
+        bottom: {{ s.offset_y_mobile }}px;
+      }
+    {% elsif s.position_mobile == 'top_left' %}
+      #shopify-section-{{ section.id }} .wa-live-chat {
+        left: {{ s.offset_x_mobile }}px;
+        right: auto;
+        bottom: auto;
+        top: {{ s.offset_y_mobile }}px;
+      }
+    {% elsif s.position_mobile == 'top_right' %}
+      #shopify-section-{{ section.id }} .wa-live-chat {
+        right: {{ s.offset_x_mobile }}px;
+        left: auto;
+        bottom: auto;
+        top: {{ s.offset_y_mobile }}px;
+      }
+    {% endif %}
+  }
+</style>
+
+<a
+  class="wa-live-chat"
+  href="{{ whatsapp_url }}"
+  aria-label="{{ s.accessibility_label | escape }}"
+  {% if s.open_new_tab %}
+    target="_blank"
+    rel="noopener noreferrer"
+  {% endif %}
+>
+  {% if s.show_icon %}
+    <span class="wa-live-chat__icon" aria-hidden="true">
+      <svg viewBox="0 0 32 32" role="presentation" focusable="false">
+        <path d="M16.02 3C8.84 3 3 8.74 3 15.8c0 2.42.69 4.78 2 6.83L3.72 29 10.2 27.3A13.18 13.18 0 0 0 16.02 28C23.2 28 29 22.26 29 15.2 29 8.74 23.2 3 16.02 3Zm0 22.82c-1.82 0-3.6-.48-5.16-1.4l-.37-.22-3.84 1 .78-3.72-.24-.38A10.51 10.51 0 0 1 5.6 15.8c0-5.84 4.68-10.6 10.42-10.6 5.75 0 10.42 4.76 10.42 10.6 0 5.26-4.67 10.02-10.42 10.02Zm5.72-7.5c-.31-.16-1.84-.9-2.13-1-.29-.1-.5-.16-.71.16-.21.31-.82 1-.99 1.2-.18.21-.37.23-.68.08-.31-.16-1.32-.48-2.52-1.54-.93-.82-1.56-1.83-1.74-2.14-.18-.31-.02-.48.14-.64.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.71-1.7-.97-2.33-.26-.61-.52-.53-.71-.54h-.6c-.21 0-.55.08-.84.39-.29.31-1.1 1.07-1.1 2.61 0 1.54 1.13 3.03 1.29 3.24.16.21 2.23 3.37 5.4 4.72.75.32 1.34.51 1.8.65.76.24 1.45.21 2 .13.61-.09 1.84-.75 2.1-1.47.26-.72.26-1.34.18-1.47-.08-.13-.29-.21-.6-.37Z"/>
+      </svg>
+    </span>
+  {% endif %}
+
+  <span class="wa-live-chat__text">
+    <span class="wa-live-chat__text-desktop">{{ s.text_desktop | escape }}</span>
+    <span class="wa-live-chat__text-mobile">{{ s.text_mobile | escape }}</span>
+  </span>
+</a>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "WhatsApp live chat",
+  "tag": "section",
+  "class": "section-whatsapp-live-chat",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_button",
+      "label": "Enable button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "phone_number",
+      "label": "WhatsApp number with country code",
+      "default": "919846256563"
+    },
+    {
+      "type": "text",
+      "id": "text_desktop",
+      "label": "Desktop button text",
+      "default": "Chat With WhatsApp"
+    },
+    {
+      "type": "text",
+      "id": "text_mobile",
+      "label": "Mobile button text",
+      "default": "Live Chat"
+    },
+    {
+      "type": "textarea",
+      "id": "message",
+      "label": "Prefilled WhatsApp message",
+      "default": "Hello! I am interested in your product from this page:"
+    },
+    {
+      "type": "text",
+      "id": "accessibility_label",
+      "label": "Accessibility label",
+      "default": "Chat with us on WhatsApp"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_new_tab",
+      "label": "Open in new tab",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Visibility"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_desktop",
+      "label": "Show on desktop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mobile",
+      "label": "Show on mobile",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show WhatsApp icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_text_mobile",
+      "label": "Hide text on mobile, icon only",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Desktop position"
+    },
+    {
+      "type": "select",
+      "id": "position_desktop",
+      "label": "Desktop position",
+      "default": "bottom_left",
+      "options": [
+        { "value": "bottom_left", "label": "Bottom left" },
+        { "value": "bottom_right", "label": "Bottom right" },
+        { "value": "top_left", "label": "Top left" },
+        { "value": "top_right", "label": "Top right" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "offset_x_desktop",
+      "label": "Desktop side spacing",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "offset_y_desktop",
+      "label": "Desktop top/bottom spacing",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Mobile position"
+    },
+    {
+      "type": "select",
+      "id": "position_mobile",
+      "label": "Mobile position",
+      "default": "bottom_left",
+      "options": [
+        { "value": "bottom_left", "label": "Bottom left" },
+        { "value": "bottom_right", "label": "Bottom right" },
+        { "value": "top_left", "label": "Top left" },
+        { "value": "top_right", "label": "Top right" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "offset_x_mobile",
+      "label": "Mobile side spacing",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "offset_y_mobile",
+      "label": "Mobile top/bottom spacing",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Desktop style"
+    },
+    {
+      "type": "range",
+      "id": "font_size_desktop",
+      "label": "Desktop text size",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "icon_size_desktop",
+      "label": "Desktop icon size",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_y_desktop",
+      "label": "Desktop vertical padding",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_x_desktop",
+      "label": "Desktop horizontal padding",
+      "min": 4,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "Desktop icon/text gap",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "border_radius_desktop",
+      "label": "Desktop border radius",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Mobile style"
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Mobile text size",
+      "min": 9,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "icon_size_mobile",
+      "label": "Mobile icon size",
+      "min": 14,
+      "max": 44,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_y_mobile",
+      "label": "Mobile vertical padding",
+      "min": 0,
+      "max": 26,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "padding_x_mobile",
+      "label": "Mobile horizontal padding",
+      "min": 4,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Mobile icon/text gap",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "border_radius_mobile",
+      "label": "Mobile border radius",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    { "type": "color", "id": "background_color", "label": "Button background", "default": "#FFFFFF" },
+    { "type": "color", "id": "text_color", "label": "Button text", "default": "#111111" },
+    { "type": "color", "id": "border_color", "label": "Button border", "default": "#25D366" },
+    { "type": "color", "id": "icon_background_color", "label": "Icon background", "default": "#25D366" },
+    { "type": "color", "id": "icon_color", "label": "Icon color", "default": "#FFFFFF" },
+    { "type": "color", "id": "hover_background_color", "label": "Hover background", "default": "#25D366" },
+    { "type": "color", "id": "hover_text_color", "label": "Hover text", "default": "#FFFFFF" },
+    { "type": "color", "id": "hover_border_color", "label": "Hover border", "default": "#25D366" },
+    { "type": "color", "id": "focus_color", "label": "Keyboard focus color", "default": "#25D366" },
+    {
+      "type": "header",
+      "content": "Border and shadow"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    { "type": "color", "id": "shadow_color", "label": "Shadow color", "default": "#000000" },
+    {
+      "type": "range",
+      "id": "shadow_y",
+      "label": "Shadow vertical offset",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "shadow_blur",
+      "label": "Shadow blur",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    { "type": "checkbox", "id": "pulse_animation", "label": "Enable pulse animation", "default": false },
+    {
+      "type": "range",
+      "id": "pulse_size",
+      "label": "Pulse size",
+      "min": 2,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "hover_lift",
+      "label": "Hover lift",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "default": "700",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi bold" },
+        { "value": "700", "label": "Bold" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "z_index",
+      "label": "Z-index",
+      "default": "9999",
+      "options": [
+        { "value": "99", "label": "Low" },
+        { "value": "999", "label": "Medium" },
+        { "value": "9999", "label": "High" },
+        { "value": "99999", "label": "Very high" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "WhatsApp live chat"
+    }
+  ]
+}
+{% endschema %}
